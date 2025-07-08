@@ -1,15 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using radar_api.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// === Connection string ===
+var connectionString = Environment.GetEnvironmentVariable("RADAR_DB_CONNECTION")
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<RadarDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// === Services ===
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// === Middleware pipeline ===
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
