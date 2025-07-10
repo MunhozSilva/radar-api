@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using radar_api.Data;
-using radar_api.Models;
 using radar_api.Dtos;
+using radar_api.Models;
+using radar_api.Services;
 
 namespace radar_api.Controllers
 {
@@ -10,68 +9,47 @@ namespace radar_api.Controllers
     [Route("api/[controller]")]
     public class AssetsController : ControllerBase
     {
-        private readonly RadarDbContext _dbContext;
+        private readonly IAssetService _service;
 
-        public AssetsController(RadarDbContext dbContext)
+        public AssetsController(IAssetService service)
         {
-            _dbContext = dbContext;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAllAssets()
         {
-            return await _dbContext.Assets.ToListAsync();
+            var assets = await _service.GetAllAsync();
+            return Ok(assets);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Asset>> GetAssetById(int id)
         {
-            var asset = await _dbContext.Assets.FindAsync(id);
+            var asset = await _service.GetByIdAsync(id);
             if (asset == null) return NotFound();
-            return asset;
+            return Ok(asset);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Asset>> CreateAsset([FromBody] AssetDto dto)
+        public async Task<ActionResult<Asset>> CreateAsset(AssetDto dto)
         {
-            var asset = new Asset
-            {
-                Ticker = dto.Ticker,
-                UrlCode = dto.UrlCode,
-                TargetVariation = dto.TargetVariation
-            };
-
-            _dbContext.Assets.Add(asset);
-            await _dbContext.SaveChangesAsync();
-
+            var asset = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetAssetById), new { id = asset.Id }, asset);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsset(int id, [FromBody] AssetDto dto)
+        public async Task<IActionResult> UpdateAsset(int id, AssetDto dto)
         {
-            var asset = await _dbContext.Assets.FindAsync(id);
-            if (asset == null) return NotFound();
-
-            asset.Ticker = dto.Ticker;
-            asset.UrlCode = dto.UrlCode;
-            asset.TargetVariation = dto.TargetVariation;
-
-            await _dbContext.SaveChangesAsync();
-
-            return NoContent();
+            var success = await _service.UpdateAsync(id, dto);
+            return success ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsset(int id)
         {
-            var asset = await _dbContext.Assets.FindAsync(id);
-            if (asset == null) return NotFound();
-
-            _dbContext.Assets.Remove(asset);
-            await _dbContext.SaveChangesAsync();
-
-            return NoContent();
+            var success = await _service.DeleteAsync(id);
+            return success ? NoContent() : NotFound();
         }
     }
 }

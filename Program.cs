@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using radar_api.Data;
+using radar_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<RadarDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IAssetService, AssetService>();
 
 var app = builder.Build();
 
