@@ -19,6 +19,8 @@ namespace radar_api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAllAssets()
         {
             _logger.LogInformation("Getting all assets.");
@@ -27,6 +29,9 @@ namespace radar_api.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Asset>> GetAssetById(int id)
         {
             _logger.LogInformation($"Getting asset with id: {id}.");
@@ -35,6 +40,9 @@ namespace radar_api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Asset>> CreateAsset(AssetDto dto)
         {
             _logger.LogInformation($"Creating new asset: Name={dto.Ticker}.");
@@ -43,6 +51,10 @@ namespace radar_api.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsset(int id, AssetDto dto)
         {
             _logger.LogInformation($"Updating asset with id: {id}. New values: Ticker={dto.Ticker}, TargetVariation={dto.TargetVariation}");
@@ -51,6 +63,10 @@ namespace radar_api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAsset(int id)
         {
             _logger.LogInformation($"Deleting asset with id: {id}");
