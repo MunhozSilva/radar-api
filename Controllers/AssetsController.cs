@@ -10,15 +10,18 @@ namespace radar_api.Controllers
     public class AssetsController : ControllerBase
     {
         private readonly IAssetService _service;
+        private readonly ILogger _logger;
 
-        public AssetsController(IAssetService service)
+        public AssetsController(IAssetService service, ILogger<AssetsController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAllAssets()
         {
+            _logger.LogInformation("Getting all assets.");
             var assets = await _service.GetAllAsync();
             return Ok(assets);
         }
@@ -26,14 +29,15 @@ namespace radar_api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Asset>> GetAssetById(int id)
         {
+            _logger.LogInformation($"Getting asset with id: {id}.");
             var asset = await _service.GetByIdAsync(id);
-            if (asset == null) return NotFound();
-            return Ok(asset);
+            return asset == null ? NotFound() : Ok(asset);
         }
 
         [HttpPost]
         public async Task<ActionResult<Asset>> CreateAsset(AssetDto dto)
         {
+            _logger.LogInformation($"Creating new asset: Name={dto.Ticker}.");
             var asset = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetAssetById), new { id = asset.Id }, asset);
         }
@@ -41,6 +45,7 @@ namespace radar_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsset(int id, AssetDto dto)
         {
+            _logger.LogInformation($"Updating asset with id: {id}. New values: Ticker={dto.Ticker}, TargetVariation={dto.TargetVariation}");
             var success = await _service.UpdateAsync(id, dto);
             return success ? NoContent() : NotFound();
         }
@@ -48,6 +53,7 @@ namespace radar_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsset(int id)
         {
+            _logger.LogInformation($"Deleting asset with id: {id}");
             var success = await _service.DeleteAsync(id);
             return success ? NoContent() : NotFound();
         }
