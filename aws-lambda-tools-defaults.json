@@ -1,0 +1,18 @@
+{
+  "Information": [
+    "This file is used to configure the AWS .NET Lambda deployment tool.",
+    "https://github.com/aws/aws-extensions-for-dotnet-cli"
+  ],
+  "profile": "default",
+  "region": "us-east-1",
+  "configuration": "Release",
+  "function-runtime": "dotnet8",
+  "function-architecture": "x64",
+  "function-memory-size": 512,
+  "function-timeout": 30,
+  "function-handler": "radar-api",
+  "function-name": "radar-api",
+  "package-type": "Image",
+  "image-tag": "radar-api:latest",
+  "function-role": "arn:aws:iam::325299498145:role/service-role/radar-api-lambda-role-oxv8oomj"
+}
